@@ -30,23 +30,22 @@ server.post("/sign-up", (req, res) => {
 
 
     loggedUsers.push(user)
-    res.status(201).send("OK")
+    res.sendStatus(200)
 })
 
 server.post("/tweets", (req, res) => {
 
-    const { tweet } = req.body
-    const loggedUser = loggedUsers.map(a => a.username)
+    const { username, tweet } = req.body
     const userAvatar= loggedUsers.map(a => a.avatar)
 
     const userTweet = {
-        username: userAvatar,
+        username: username,
         tweet: tweet,
-        avatar: loggedUser
+        avatar: userAvatar
     }
 
-    if(!loggedUser.find((a) => a.username === username)){
-        return res.sendStatus(401)
+    if(!loggedUsers.find((a) => a.username === username)){
+        return res.status(401).send("UNAUTHORIZED")
     }
     
     if (!userTweet.tweet) {
@@ -56,7 +55,7 @@ server.post("/tweets", (req, res) => {
         return res.status(400).send("Campos inválidos!")
     }
         tweets.push(userTweet)
-        res.status(201).send("OK")    
+        res.sendStatus(200)   
 })
 
 server.get("/tweets", (req, res) => {
