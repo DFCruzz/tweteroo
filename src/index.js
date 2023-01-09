@@ -7,9 +7,12 @@ server.use(express.json())
 server.use(cors())
 
 const PORT = 5000
-const loggedUser= []
+const loggedUsers= []
+const tweets = []
+
 
 server.post("/sign-up", (req, res) => {
+
     const { username, avatar } = req.body
 
     const user = {
@@ -22,12 +25,51 @@ server.post("/sign-up", (req, res) => {
     }
 
     if (!(typeof user.username === "string") || !(typeof user.avatar === "string")) {
-        return res.Status(400).send("Campos inválidos!")
+        return res.status(400).send("Campos inválidos!")
     }
 
 
-    loggedUser.push(user)
-    res.sendStatus(200)
+    loggedUsers.push(user)
+    res.status(201).send("OK")
+})
+
+server.post("/tweets", (req, res) => {
+
+    const { tweet } = req.body
+    const loggedUser = loggedUsers.map(a => a.username)
+    const userAvatar= loggedUsers.map(a => a.avatar)
+
+    const userTweet = {
+        username: userAvatar,
+        tweet: tweet,
+        avatar: loggedUser
+    }
+
+    if(!loggedUser.find((a) => a.username === username)){
+        return res.sendStatus(401)
+    }
+    
+    if (!userTweet.tweet) {
+        return res.status(400).send("Todos os campos são obrigatórios!") 
+    }
+    if(!(typeof userTweet.tweet === "string")){
+        return res.status(400).send("Campos inválidos!")
+    }
+        tweets.push(userTweet)
+        res.status(201).send("OK")    
+})
+
+server.get("/tweets", (req, res) => {
+    let latestTweets = []
+
+    if (tweets.length >= 10) {
+        latestTweets = tweets.slice(tweets.length - 10)
+    }
+    else {
+        latestTweets = tweets
+    }
+
+    res.send(latestTweets.reverse())
 })
 
 
